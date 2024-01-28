@@ -1,8 +1,11 @@
-require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
+const rootRouter = require("./routes/index");
+require('dotenv').config(); 
 
 const app = express();
+
 
 const port = 3000;
 
@@ -20,22 +23,16 @@ if (!uri) {
 
 mongoose.connect(uri , { dbName: "wallet"})
 
-const router = express.Router();
-
-app.use(router);
-
 app.use(cors());
 
-app.use(express.json());
+app.use(express.json()); // To parse json data incoming from req body
 
-app.post('/signup' , (req,res) => {
-    const {firstName , lastName , email , password} = req.body;
-    console.log(firstName);
-    console.log(lastName);
-    console.log(email);
-    console.log(password);
-    res.send("Data recieveed successfully");
-})
+app.use("/api/v1" , rootRouter); 
+
+
+
+
+
 
 app.listen(port,()=> console.log(`app is running on port ${port}`));
 
