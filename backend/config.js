@@ -1,3 +1,3 @@
 // ../config
-const JWT_SECRET = "paytm-wallet";
+const JWT_SECRET = "paytm-wallet"; 
 module.exports = JWT_SECRET;

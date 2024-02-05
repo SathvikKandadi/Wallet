@@ -1,4 +1,5 @@
 export default function SendMoney() {
+
   return (
     <div className="flex flex-row justify-center h-screen bg-gray-100">
       <div className="border-2 border-slate-200 rounded-lg shadow-2xl z-10 bg-white mt-40 p-8 w-96 h-min">
@@ -21,3 +22,4 @@ export default function SendMoney() {
     </div>
   )
 }
+// npm init -y  npm i express 

@@ -4,6 +4,7 @@ const { User } = require("../db");
 const JWT_SECRET = require("../config");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { default: authMiddleware } = require("../middleware");
 
 const router = express.Router();
 
@@ -33,7 +34,7 @@ router.post("/signup", async (req, res) => {
             });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10); 
 
         const user = await User.create({
             username: username,
@@ -44,7 +45,7 @@ router.post("/signup", async (req, res) => {
 
         const userId = user._id;
 
-        const token = jwt.sign({
+        const token = jwt.sign({ 
             userId
         }, JWT_SECRET);
 
@@ -90,7 +91,7 @@ router.post("/signin", async (req, res) => {
             })
         }
 
-        const passwordMatch = await bcrypt.compare(password, user.password);
+        const passwordMatch = await bcrypt.compare(password, user.password); 
         if(!passwordMatch)
         {
             return res.status(401).json({
@@ -115,9 +116,63 @@ router.post("/signin", async (req, res) => {
             message: "Internal server error",
         });
     }
+  
+
+
+})
+
+const updateBody = zod.object({
+	password: zod.string().optional(),
+    firstName: zod.string().optional(),
+    lastName: zod.string().optional(),
+})
+
+
+router.put("/" , authMiddleware, async (req,res) => {
+
+    const { success } = updateBody.safeParse(req.body);
+
+    if (!success) {
+        return res.status(411).json({
+            message: "Incorrect inputs"
+        })
+    }
+
+    await User.updateOne(req.body, {
+        _id: req.userId
+    })
+
+    res.json({
+        message: "Updated successfully"
+    })
+
+})
 
 
 
+router.get("/bulk", async (req, res) => {
+    const filter = req.query.filter || "";
+
+    const users = await User.find({
+        $or: [{
+            firstName: {
+                "$regex": filter
+            }
+        }, {
+            lastName: {
+                "$regex": filter
+            }
+        }]
+    })
+
+    res.json({
+        user: users.map(user => ({
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            _id: user._id
+        }))
+    })
 })
 
 

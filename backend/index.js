@@ -15,6 +15,7 @@ const uri = process.env.URI;
 
 
 
+
 if (!uri) {
     console.error('MongoDB URI is not defined in the environment variables.');
     process.exit(1);
@@ -28,6 +29,8 @@ app.use(cors());
 app.use(express.json()); // To parse json data incoming from req body
 
 app.use("/api/v1" , rootRouter); 
+
+
 
 
 
