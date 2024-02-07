@@ -1,21 +1,17 @@
 const { JWT_SECRET } = require("./config");
 const jwt = require("jsonwebtoken");
 
-export default function authMiddleware(req,res,next) {
-
+const authMiddleware = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(403).json({
-            message:"Login first"
-        });
+        return res.status(403).json({});
     }
-   
 
     const token = authHeader.split(' ')[1];
 
     try {
-        const decoded = jwt.verify(token, JWT_SECRET); 
+        const decoded = jwt.verify(token, JWT_SECRET);
 
         req.userId = decoded.userId;
 
@@ -23,4 +19,58 @@ export default function authMiddleware(req,res,next) {
     } catch (err) {
         return res.status(403).json({});
     }
+};
+
+module.exports = {
+    authMiddleware
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const { JWT_SECRET } = require("./config");
+// const jwt = require("jsonwebtoken");
+
+// export default function authMiddleware(req,res,next) {
+
+//     const authHeader = req.headers.authorization;
+
+//     // ugeghuegh994949 
+//     // Bearer hgoiehgioehgie
+//     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+//         return res.status(403).json({
+//             message:"Login first"
+//         });
+//     }
+   
+
+//     const token = authHeader.split(' ')[1];
+
+//     try {
+//         const decoded = jwt.verify(token, JWT_SECRET); 
+
+//         req.userId = decoded.userId;
+
+//         next();
+//     } catch (err) {
+//         return res.status(403).json({});
+//     }
+// }

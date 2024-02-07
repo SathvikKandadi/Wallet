@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react"
 import { Link } from "react-router-dom";
 
@@ -9,12 +10,16 @@ export default function Signup() {
     const [email , setEmail] = useState("");
     const [password , setPassword] = useState("");
     
-    function handleClick():void
+    async function handleClick()
     {
-        console.log(firstName);
-        console.log(lastName);
-        console.log(email);
-        console.log(password);
+        
+        const resp = await axios.post("http://localhost:3000/api/v1/user/signup" , {
+            firstName:firstName,
+            lastName:lastName,
+            username:email,
+            password:password
+        })
+        
     }
 
   return (

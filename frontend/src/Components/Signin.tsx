@@ -1,14 +1,25 @@
+import axios from "axios";
 import { useState } from "react"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Signin() {
     const [email , setEmail] = useState("");
     const [password , setPassword] = useState("");
+    const navigate = useNavigate();
     
-    function handleClick():void
+    async function handleClick()
     {
-        console.log(email);
-        console.log(password);
+        const resp = await axios.post("http://localhost:3000/api/v1/user/signin" , {
+            username:email,
+            password:password
+        })
+        console.log(resp);
+        console.log(resp.data);
+        if(resp.data.message === "Login successfull")
+        {
+            localStorage.setItem('token',resp.data.token );
+            navigate("/dashboard");
+        }
     }
 
   return (

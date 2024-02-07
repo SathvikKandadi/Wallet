@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+
 // Create a Schema for Users
 const userSchema = new mongoose.Schema({
     username: {
@@ -31,8 +32,30 @@ const userSchema = new mongoose.Schema({
 });
 
 // Create a model from the schema
+
+// from to amount 
+
+// userId1 userId2 400 
+// 
+
+
+const accountSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId, // Reference to User model
+        ref: 'User',
+        required: true
+    },
+    balance: {
+        type: Number,
+        required: true
+    }
+});
+
+const Account = mongoose.model('Account', accountSchema);
 const User = mongoose.model('User', userSchema);
 
 module.exports = {
-	User
+	User,
+  Account,
 };
+

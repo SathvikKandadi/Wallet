@@ -1,10 +1,10 @@
 const zod = require("zod");
 const express = require("express");
-const { User } = require("../db");
+const { User, Account } = require("../db");
 const JWT_SECRET = require("../config");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { default: authMiddleware } = require("../middleware");
+const {  authMiddleware } = require("../middleware");
 
 const router = express.Router();
 
@@ -23,18 +23,19 @@ router.post("/signup", async (req, res) => {
             message: "Incorrect inputs"
         })
     }
+
     const { firstName, lastName, username, password } = req.body;
 
     try {
-        const existingUser = await User.findOne({ username }); 
+        const existingUser = await User.findOne({ username });
 
-        if (existingUser) { 
+        if (existingUser) {
             return res.status(411).json({
                 message: "User already exists"
             });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10); 
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.create({
             username: username,
@@ -45,7 +46,13 @@ router.post("/signup", async (req, res) => {
 
         const userId = user._id;
 
-        const token = jwt.sign({ 
+        await Account.create({
+            userId,
+            balance: 1 + Math.random() * 100000
+        })
+
+       
+        const token = jwt.sign({
             userId
         }, JWT_SECRET);
 
@@ -78,22 +85,20 @@ router.post("/signin", async (req, res) => {
         })
     }
 
-    const {username , password} = req.body;
+    const { username, password } = req.body;
 
-    try{
+    try {
 
-        const user = await User.findOne({username});
+        const user = await User.findOne({ username });
 
-        if(!user)
-        {
+        if (!user) {
             return res.status(411).json({
                 message: "No such user exists"
             })
         }
 
-        const passwordMatch = await bcrypt.compare(password, user.password); 
-        if(!passwordMatch)
-        {
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
             return res.status(401).json({
                 message: "Invalid Credentials"
             })
@@ -106,8 +111,8 @@ router.post("/signin", async (req, res) => {
         }, JWT_SECRET);
 
         res.status(200).json({
-            message:"Login successfull",
-            token:token
+            message: "Login successfull",
+            token: token
         })
     }
     catch (error) {
@@ -116,19 +121,21 @@ router.post("/signin", async (req, res) => {
             message: "Internal server error",
         });
     }
-  
+
 
 
 })
 
 const updateBody = zod.object({
-	password: zod.string().optional(),
+    password: zod.string().optional(),
     firstName: zod.string().optional(),
     lastName: zod.string().optional(),
 })
 
 
-router.put("/" , authMiddleware, async (req,res) => {
+
+
+router.put("/", authMiddleware, async (req, res) => {
 
     const { success } = updateBody.safeParse(req.body);
 
@@ -177,3 +184,7 @@ router.get("/bulk", async (req, res) => {
 
 
 module.exports = router;
+
+
+
+
