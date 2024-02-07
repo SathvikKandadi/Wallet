@@ -1,4 +1,42 @@
+import axios from "axios";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 export default function SendMoney() {
+
+  const navigate = useNavigate();
+
+
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          navigate("/");
+          return;
+        }
+        // headers body params 
+        const resp = await axios.get("http://localhost:3000/api/v1/user/verify", {
+          headers: {
+            Authorization: `Bearer ${token}` 
+            // userId => grghrhgoh939393
+          }
+        });
+
+        if (resp.data.message !== "User is logged in") {
+          navigate("/");
+        }
+
+
+      } catch (error) {
+        // Handle error (network error, server error, etc.)
+        console.error("Error fetching verification:", error);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   return (
     <div className="flex flex-row justify-center h-screen bg-gray-100">
@@ -22,4 +60,3 @@ export default function SendMoney() {
     </div>
   )
 }
-// npm init -y  npm i express 

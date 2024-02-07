@@ -35,6 +35,8 @@ router.post("/signup", async (req, res) => {
             });
         }
 
+        
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.create({
@@ -54,7 +56,11 @@ router.post("/signup", async (req, res) => {
        
         const token = jwt.sign({
             userId
-        }, JWT_SECRET);
+        }, 
+        JWT_SECRET, 
+        {
+            expiresIn: '1d' // Expires in 1 day
+        });
 
         res.status(200).json({
             message: "User created successfully",
@@ -180,6 +186,10 @@ router.get("/bulk", async (req, res) => {
             _id: user._id
         }))
     })
+})
+
+router.get("/verify" , authMiddleware , (req,res) => {
+    res.status(200).json({message:"User is logged in"});
 })
 
 

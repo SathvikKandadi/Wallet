@@ -13,8 +13,7 @@ export default function Signin() {
             username:email,
             password:password
         })
-        console.log(resp);
-        console.log(resp.data);
+
         if(resp.data.message === "Login successfull")
         {
             localStorage.setItem('token',resp.data.token );
