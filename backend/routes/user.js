@@ -189,9 +189,38 @@ router.get("/bulk", async (req, res) => {
 })
 
 router.get("/verify" , authMiddleware , (req,res) => {
-    res.status(200).json({message:"User is logged in"});
+    res.status(200).json({message:"User is logged in" , userId:req.userId});
 })
 
+const userBody = zod.object({
+    userId: zod.string()
+ })
+
+
+router.post("/me" , async (req,res) => {
+    const { success } = userBody.safeParse(req.body)
+    if (!success) {
+        return res.status(400).json({
+            message: "Incorrect inputs"
+        })
+    }
+
+    const {userId} = req.body;
+
+    const user = await User.findById(userId);
+
+    if(user)
+    {
+
+        res.status(200).json({message:"User found" , firstName:user.firstName});
+    }
+
+    else
+    {
+        res.status(404).json({message:"No such user exists"});
+    }
+
+})
 
 module.exports = router;
 
